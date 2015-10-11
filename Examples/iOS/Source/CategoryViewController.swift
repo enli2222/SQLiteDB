@@ -34,12 +34,12 @@ class CategoryViewController: UIViewController, UITableViewDelegate, UITableView
 	}
 	
 	func tableView(tv:UITableView, cellForRowAtIndexPath indexPath:NSIndexPath) -> UITableViewCell {
-		let cell:UITableViewCell = tv.dequeueReusableCellWithIdentifier("CategoryCell") as! UITableViewCell
+		let cell:UITableViewCell? = tv.dequeueReusableCellWithIdentifier("CategoryCell")
 		let row = data[indexPath.row]
 		if let name = row["name"] {
-			cell.textLabel?.text = name.asString()
+			cell!.textLabel?.text = name.asString()
 		}
-		return cell
+		return cell!
 	}
 }
 

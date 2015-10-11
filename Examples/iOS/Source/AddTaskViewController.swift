@@ -17,13 +17,13 @@ class AddTaskViewController: UITableViewController {
 			txtTask.resignFirstResponder()
 		}
 		// Validations
-		if txtTask.text.isEmpty {
+		if txtTask.text!.isEmpty {
 			let alert = UIAlertView(title:"SQLiteDB", message:"Please add a task description first!", delegate:nil, cancelButtonTitle: "OK")
 			alert.show()
 		}
 		// Save task
 		let db = SQLiteDB.sharedInstance()
-		let sql = "INSERT INTO tasks(task, categoryID) VALUES ('\(txtTask.text)', 1)"
+		let sql = "INSERT INTO tasks(task, categoryID) VALUES ('\(txtTask.text!)', 1)"
 		let rc = db.execute(sql)
 		if rc != 0 {
 			let alert = UIAlertView(title:"SQLiteDB", message:"Task successfully saved!", delegate:nil, cancelButtonTitle: "OK")
