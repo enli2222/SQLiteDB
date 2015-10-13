@@ -247,26 +247,25 @@ class SQLiteDB {
 			}
 		}
 		let path = docDir.URLByAppendingPathComponent(dbName)
-        //stringByAppendingPathComponent(dbName)
-		print("Database path: \(path)")
+		//print("Database path: \(path)")
 		// Check if copy of DB is there in Documents directory
-		if !(fm.fileExistsAtPath(path.path!)) {
-			// The database does not exist, so copy to Documents directory
-			//if let from = NSBundle.mainBundle().resourcePath?.stringByAppendingPathComponent(dbName) {
-			
-            if let from = NSBundle.mainBundle().resourceURL?.URLByAppendingPathComponent(dbName){
-            //var error:NSError?
-                do {
-                   try  fm.copyItemAtURL(from, toURL: path)
-                }catch
-                {
-                    print("SQLiteDB - failed to copy writable version of DB!")
-                    //todo
-                    //print("Error - \(error!.localizedDescription)")
-                    return
-                }
-			}
-		}
+//		if !(fm.fileExistsAtPath(path.path!)) {
+//			// The database does not exist, so copy to Documents directory
+//			//if let from = NSBundle.mainBundle().resourcePath?.stringByAppendingPathComponent(dbName) {
+//			
+//            if let from = NSBundle.mainBundle().resourceURL?.URLByAppendingPathComponent(dbName){
+//            //var error:NSError?
+//                do {
+//                   try  fm.copyItemAtURL(from, toURL: path)
+//                }catch
+//                {
+//                    print("SQLiteDB - failed to copy writable version of DB!")
+//                    //todo
+//                    //print("Error - \(error!.localizedDescription)")
+//                    return
+//                }
+//			}
+//		}
 		// Open the DB
 		let cpath = path.path!.cStringUsingEncoding(NSUTF8StringEncoding)
 		let error = sqlite3_open(cpath!, &db)
@@ -334,24 +333,19 @@ class SQLiteDB {
 		}
 		return rows
 	}
-	
-	// Show alert with either supplied message or last error
-	func alert(msg:String) {
-		dispatch_async(dispatch_get_main_queue()) {
-#if os(iOS)
-			let alert = UIAlertView(title: "SQLiteDB", message:msg, delegate: nil, cancelButtonTitle: "OK")
-			alert.show()
-#else
-			let alert = NSAlert()
-			alert.addButtonWithTitle("OK")
-			alert.messageText = "SQLiteDB"
-			alert.informativeText = msg
-			alert.alertStyle = NSAlertStyle.WarningAlertStyle
-			alert.runModal()
-#endif
-		}
-	}
-	
+    
+    func tableExists(tableName: String) -> Bool {
+        let sql = "pragma table_info('\(tableName)');"
+        var result = false
+        dispatch_sync(queue) {
+            let stmt = self.prepare(sql,params: nil)
+            if stmt != nil {
+                result = sqlite3_step(stmt) == SQLITE_ROW
+            }
+        }
+        return result
+    }
+		
 	// Private method which prepares the SQL
 	private func prepare(sql:String, params:[AnyObject]?)->COpaquePointer {
 		var stmt:COpaquePointer = nil
@@ -481,7 +475,7 @@ class SQLiteDB {
 		sqlite3_finalize(stmt)
 		return rows
 	}
-	
+    
 	// Get column type
 	private func getColumnType(index:CInt, stmt:COpaquePointer)->CInt {
 		var type:CInt = 0

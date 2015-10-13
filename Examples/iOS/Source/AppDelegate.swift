@@ -15,6 +15,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 	let db = SQLiteDB.sharedInstance()
 	
 	func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject : AnyObject]?) -> Bool {
+        let db = SQLiteDB.sharedInstance()
+        
+        if !db.tableExists("categories") {
+            db.execute("CREATE TABLE 'categories' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, 'name' TEXT NOT NULL)")
+        }
+        if !db.tableExists("tasks") {
+            db.execute("CREATE TABLE 'tasks' ('id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, 'task' TEXT NOT NULL, 'categoryID' INTEGER NOT NULL)")
+        }
+       
+        
+        
 		return true
 	}
 
